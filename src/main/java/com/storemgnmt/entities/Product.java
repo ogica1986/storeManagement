@@ -20,6 +20,15 @@ public class Product {
     private Integer stock;
     private BigDecimal unitaryPrice;
 
+    public Product(){
+
+    }
+    public Product(Long id, String name, Integer stock, BigDecimal unitaryPrice) {
+        this.id = id;
+        this.name = name;
+        this.stock = stock;
+        this.unitaryPrice = unitaryPrice;
+    }
 
     public void setId(Long id) {
         this.id = id;

@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.storemgnmt.repository.ProductRepository;
 
+import javax.transaction.Transactional;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,6 +24,12 @@ public class ProductService {
         return Optional.ofNullable(productRepository.findProductByName(name)).orElseThrow(ProductNotFoundException::new);
     }
 
+    @Transactional
+    public void changePrice(String productName, BigDecimal price){
+        Optional.ofNullable(findProductByName(productName)).ifPresent( product ->product.setUnitaryPrice(price));
+    }
+
+    @Transactional
     public void addProduct(Product newProduct){
         Optional<Product> existingProdOpt=Optional.ofNullable (
                 productRepository.findProductByName(newProduct.getName()));
