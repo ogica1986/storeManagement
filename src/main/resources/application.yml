@@ -1,3 +1,6 @@
+com:
+  storemgnmt:
+    authentication: OAUTH2
 spring:
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
@@ -13,4 +16,12 @@ spring:
     properties:
       hibernate:
         format_sql: true
+  security:
+    oauth2:
+      client:
+        registration:
+          github:
+            clientId: 59a641155b0f000d8b7c
+            clientSecret: 0334101c37930ad541192ab4a2271b6f423ace9b
+
 
