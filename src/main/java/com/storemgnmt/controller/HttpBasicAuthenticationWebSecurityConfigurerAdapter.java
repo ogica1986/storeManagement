@@ -1,51 +1,51 @@
 package com.storemgnmt.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.DependsOn;
-import org.springframework.http.HttpMethod;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.userdetails.UserDetailsPasswordService;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableWebSecurity
-public class HttpBasicAuthenticationWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
+public class HttpBasicAuthenticationWebSecurityConfigurerAdapter {
 
-    private static final String CLIENT = "CLIENT";
-    private static final String ADMIN = "ADMIN" ;
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http
-                .csrf().disable()
-                .authorizeRequests()
-                .mvcMatchers(HttpMethod.GET, "/storeMgmt/products/**").hasRole(CLIENT)
-                .mvcMatchers(HttpMethod.GET, "/storeMgmt/products").hasRole(CLIENT)
-                .mvcMatchers(HttpMethod.POST, "/storeMgmt/products").hasRole(ADMIN)
-                .mvcMatchers(HttpMethod.PUT, "/storeMgmt/products/**").hasRole(ADMIN)
-                .anyRequest().authenticated().and().httpBasic();
+    public static final String CLIENT = "CLIENT";
+    public static final String ADMIN = "ADMIN" ;
+
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http.authorizeRequests()
+                .anyRequest()
+                .authenticated()
+                .and()
+                .httpBasic();
+
+        return http.build();
     }
 
-    @Autowired
-    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        auth
-                .inMemoryAuthentication()
-                .withUser("buyer")
+    @Bean
+    public UserDetailsService users(){
+        UserDetails user = User.builder()
+                .username("buyer")
                 .password("{noop}buyerPass")
                 .roles(CLIENT)
-                .and()
-                .withUser("admin")
+                .build();
+        UserDetails admin = User.builder()
+                .username("admin")
                 .password("{noop}adminPass")
-                .roles(ADMIN,CLIENT);
+                .roles(ADMIN,CLIENT)
+                .build();
+        return new InMemoryUserDetailsManager(user, admin);
     }
 
-    }
+}
 
 
 
